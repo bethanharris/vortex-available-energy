@@ -1,4 +1,3 @@
-import numpy as np
 from derived_variables import *
 
 
@@ -83,15 +82,10 @@ def reference_position(angular_momentum_parcel, entropy_parcel):
 
         mid_z_new = (low_z + high_z) / 2.
 
+    r_conserving_angular_momentum = angular_momentum_radius_from_height(angular_momentum_parcel, mid_z_new)
+
     return r_conserving_angular_momentum, mid_z_new
 
-
-# def available_energy(r, z, r_ref, z_ref):
-#     M_terms = 0.5 * angular_momentum(r, z)**2 * (1. / r ** 2 - 1. / r_ref ** 2) + 0.125 * f**2 * (r**2 - r_ref**2)
-#     geopotential_terms = geopotential(z) - geopotential(z_ref)
-#     enthalpy_terms = cp * (
-#                 temperature(r, z) - lifted_temperature(temperature(r, z), pressure(r, z), pressure(r_ref, z_ref)))
-#     return M_terms + geopotential_terms + enthalpy_terms
 
 def available_energy(M, eta, r, z):
     r_ref, z_ref = reference_position(M, eta)
