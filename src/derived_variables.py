@@ -7,7 +7,7 @@ cp = 1004.5
 
 
 def angular_momentum(r, z):
-    return r*azimuthal_wind(r, z) + 0.5*f*r**2
+    return np.sqrt(r**3 * (gradient_wind_term(r, z) + 0.25 * r * f**2))
 
 
 def potential_temperature(r, z):
