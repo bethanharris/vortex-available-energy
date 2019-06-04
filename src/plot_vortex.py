@@ -23,7 +23,7 @@ def plot_available_energy_perturbations(r, z, show=True):
     cbar = plt.colorbar()
     cbar.set_label(r'$\mathregular{\Pi\;\left(Jkg^{-1}\right)}$', fontsize=18)
     cbar.ax.tick_params(labelsize=14)
-    plt.title(r'$\mathregular{r_0 = %d \,km,\; z_0 = %d\, km}$' % (r/1000., z/1000.), fontsize=16)
+    plt.title(r'$\mathregular{r_0 = %g \,km,\; z_0 = %g\, km}$' % (r/1000., z/1000.), fontsize=16)
     plt.tight_layout()
     plt.savefig('../results/ae_perturbation_M_eta_r_%d_z_%d.png' % (r, z), dpi=300)
 
@@ -35,7 +35,7 @@ def plot_available_energy_perturbations(r, z, show=True):
     cbar = plt.colorbar()
     cbar.set_label(r'$\mathregular{\Pi\;\left(Jkg^{-1}\right)}$', fontsize=18)
     cbar.ax.tick_params(labelsize=14)
-    plt.title(r'$\mathregular{r_0 = %d \,km,\; z_0 = %d\, km}$' % (r / 1000., z / 1000.), fontsize=16)
+    plt.title(r'$\mathregular{r_0 = %g \,km,\; z_0 = %g\, km}$' % (r / 1000., z / 1000.), fontsize=16)
     plt.tight_layout()
     plt.savefig('../results/ae_perturbation_rz_r_%d_z_%d.png' % (r, z), dpi=300)
 
