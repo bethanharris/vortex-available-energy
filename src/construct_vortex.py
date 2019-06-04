@@ -17,7 +17,7 @@ vertical_top = 16000.
 
 def pressure_perturbation(r, z):
     radial_term = 1. - np.exp(-radial_coefficient*radial_scale/r)
-    vertical_term = np.exp(-z/vertical_scale)
+    vertical_term = np.exp(-z/vertical_scale)*np.cos(0.5*np.pi*z/vertical_top)
     return pressure_deficit*radial_term*vertical_term
 
 
@@ -39,13 +39,15 @@ def pressure(r, z):
 
 def pressure_vertical_gradient(r, z):
     radial_term = 1. - np.exp(-radial_coefficient*radial_scale/r)
-    vertical_term = -np.exp(-z / vertical_scale) * (1. / vertical_scale)
+    vertical_term = -np.exp(-z / vertical_scale) * (1. / vertical_scale) * (
+                (0.5 * np.pi * vertical_scale / vertical_top) * np.sin(0.5 * np.pi * z / vertical_top) + np.cos(
+            0.5 * np.pi * z / vertical_top))
     return pressure_deficit*radial_term*vertical_term + environment_pressure_vertical_gradient(z)
 
 
 def pressure_radial_gradient(r, z):
     radial_term = -radial_coefficient*radial_scale*np.exp(-radial_coefficient*radial_scale/r)/(r**2)
-    vertical_term = np.exp(-z / vertical_scale)
+    vertical_term = np.exp(-z / vertical_scale) * np.cos(0.5 * np.pi * z / vertical_top)
     return pressure_deficit * radial_term * vertical_term
 
 
