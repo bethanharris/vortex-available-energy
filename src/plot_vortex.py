@@ -1,18 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from utils import grid_variable, r_z_grid
 from available_energy import *
-
-
-def r_z_grid():
-    r_list = np.linspace(1., 200000., 201, endpoint=True)
-    z_list = np.linspace(1., 16000., 17, endpoint=True)
-    r_grid, z_grid = np.meshgrid(r_list, z_list)
-    return r_grid, z_grid
-
-
-def grid_variable(function):
-    r_grid, z_grid = r_z_grid()
-    return function(r_grid, z_grid)
 
 
 def plot_variable(function):
@@ -62,8 +51,8 @@ def plot_available_energy_perturbations(r, z, show=True):
     else:
         plt.close()
 
-    return M_grid-base_M, entropy_grid-base_entropy, ae
+    return
 
 
 if __name__=='__main__':
-    perturbation_M, perturbation_entropy, ae = plot_available_energy_perturbations(50000., 5000.)
+    plot_available_energy_perturbations(50000., 5000.)
