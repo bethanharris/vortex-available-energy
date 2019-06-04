@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from utils import grid_variable, r_z_grid
+from utils import grid_variable
 from available_energy import *
 
 
-def plot_variable(function):
+def plot_variable(variable):
     plt.figure()
-    plt.contourf(grid_variable(function), cmap=cm.YlGn)
+    plt.contourf(grid_variable(variable), cmap=cm.YlGn)
     plt.colorbar()
     plt.show()
 
