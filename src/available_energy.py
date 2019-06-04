@@ -1,4 +1,5 @@
 from derived_variables import *
+from utils import r_z_grid
 
 
 def lifted_temperature(old_temperature, old_pressure, new_pressure):
@@ -95,3 +96,20 @@ def available_energy(M, eta, r, z):
     enthalpy_in_situ = cp * temperature_in_situ
     enthalpy_at_reference = cp * lifted_temperature(temperature_in_situ, pressure(r, z), pressure(r_ref, z_ref))
     return M_terms + geopotential_terms + enthalpy_in_situ - enthalpy_at_reference
+
+
+def available_energy_perturbations_M_eta(r, z):
+    base_M = angular_momentum(r, z)
+    base_entropy = entropy(r, z)
+    r_grid, z_grid = r_z_grid()
+    all_M = angular_momentum(r_grid, z_grid)
+    all_entropy = entropy(r_grid, z_grid)
+    M_grid, entropy_grid = np.meshgrid(np.linspace(all_M.min(), all_M.max(), 100), np.linspace(all_entropy.min(), all_entropy.max(), 100))
+    ae_M_eta = available_energy(M_grid, entropy_grid, r, z)
+    return M_grid-base_M, entropy_grid-base_entropy, ae_M_eta
+
+
+def available_energy_perturbations_r_z(r, z):
+    r_grid, z_grid = r_z_grid()
+    ae_r_z = available_energy(angular_momentum(r_grid, z_grid), entropy(r_grid, z_grid), r, z)
+    return r_grid-r, z_grid-z, ae_r_z
