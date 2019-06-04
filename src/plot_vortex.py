@@ -1,7 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from derived_variables import *
 from available_energy import *
 
 
@@ -45,15 +43,19 @@ def plot_available_energy(r_ref, z_ref):
 def plot_available_energy_perturbations(r, z):
     base_M = angular_momentum(r, z)
     base_entropy = entropy(r, z)
-    M_list = np.linspace(base_M*0.9, base_M*1.1, 100)
-    entropy_list = np.linspace(base_entropy*0.9, base_entropy*1.1, 100)
-    perturbation_M, perturbation_entropy = np.meshgrid(M_list, entropy_list)
-    ae = available_energy(perturbation_M, perturbation_entropy, r, z)
+
+    r_grid, z_grid = r_z_grid()
+    all_M = angular_momentum(r_grid, z_grid)
+    all_entropy = entropy(r_grid, z_grid)
+    M_grid, entropy_grid = np.meshgrid(np.linspace(all_M.min(), all_M.max(), 100.), np.linspace(all_entropy.min(), all_entropy.max(), 100.))
+    ae = available_energy(M_grid, entropy_grid, r, z)
+
     plt.figure()
-    plt.contourf(perturbation_M-base_M, perturbation_entropy-base_entropy, ae, 100, cmap=cm.YlGn)
+    plt.contourf(M_grid-base_M, entropy_grid-base_entropy, ae, 20, cmap=cm.gist_heat_r)
     plt.colorbar()
     plt.show()
-    return perturbation_M, perturbation_entropy, ae
+    return M_grid-base_M, entropy_grid-base_entropy, ae
 
 
-perturbation_M, perturbation_entropy, ae = plot_available_energy_perturbations(5000., 500.)
+if __name__=='__main__':
+    perturbation_M, perturbation_entropy, ae = plot_available_energy_perturbations(50000., 5000.)
