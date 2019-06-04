@@ -47,5 +47,9 @@ def plot_available_energy_perturbations(r, z, show=True):
     return
 
 
-if __name__=='__main__':
-    plot_available_energy_perturbations(50000., 5000.)
+if __name__ == '__main__':
+    r0_list = [100., 1000., 2500., 5000., 10000., 25000., 40000., 50000., 100000., 150000., 200000.]
+    z0_list = [10., 100., 250., 500., 1000., 2500., 4000., 5000., 10000., 15000.]
+    for r0 in r0_list:
+        for z0 in z0_list:
+            plot_available_energy_perturbations(r0, z0, show=False)
