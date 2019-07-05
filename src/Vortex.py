@@ -1,20 +1,6 @@
 import numpy as np
 
 
-# f = 6.14e-5
-# g = 9.81
-# Rd = 287.
-# surface_temperature = 303.
-# lapse_rate = 2.12e-5
-# central_pressure = 95000.
-# far_field_pressure = 100000.
-# pressure_deficit = central_pressure - far_field_pressure
-# radial_scale = 20000.
-# radial_coefficient = 1.048
-# vertical_scale = 8000.
-# vertical_top = 16000.
-
-
 class Vortex:
     f = 6.14e-5
     g = 9.81
