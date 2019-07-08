@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from available_energy import *
+from Vortex import *
 
 
 def plot_variable(vortex, variable, label=''):
@@ -69,6 +70,30 @@ def plot_available_energy_perturbations(vortex, r, z, save=False, show=True):
     return
 
 
+def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=True):
+    perturbation_v, perturbation_pi_k, quadratic_perturbation_v = pi_k_perturbations(vortex, r, z, v_range)
+
+    plt.figure()
+    plt.plot(perturbation_v, perturbation_pi_k, 'k-', linewidth=2, label='$\Pi_k$')
+    plt.plot(perturbation_v, quadratic_perturbation_v, '--', color='gray', linewidth=2, label='$\left(v-v_m\\right)^2$')
+    plt.xlabel(r'$\mathregular{v - v_m\;\left(ms^{-1}\right)}$', fontsize=18)
+    plt.ylabel(r'$\mathregular{\left(Jkg^{-1}\right)}$', fontsize=18)
+    plt.gca().tick_params(labelsize=14)
+    plt.legend(fontsize=18)
+    plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km,\; v_m = %0.1f ms^{-1}}$' % (
+    r / 1000., z / 1000., vortex.azimuthal_wind(r, z)), fontsize=16)
+    plt.tight_layout()
+    if save:
+        plt.savefig('../results/ke_perturbation_r_%d_z_%d.png' % (r, z), dpi=300)
+
+    if show:
+        plt.show()
+    else:
+        plt.close('all')
+
+    return
+
+
 def illustrate_lifting(vortex):
     r = 50000.
     z = 10000.
@@ -91,8 +116,6 @@ def illustrate_lifting(vortex):
 
 
 if __name__ == '__main__':
-    r_list = [2500., 5000., 10000., 20000., 25000., 50000., 75000., 100000., 150000.]
-    z_list = [0., 1000., 2000., 5000., 8000., 10000., 12000., 15000.]
-    for r in r_list:
-        for z in z_list:
-            plot_available_energy_perturbations(r, z, show=False)
+    vortex = smith_vortex()
+    plot_available_energy_perturbations(vortex, 50000., 5000., show=False)
+    illustrate_lifting(vortex)

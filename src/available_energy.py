@@ -195,3 +195,12 @@ def available_potential_energy_perturbations_r_z(vortex, r, z):
     r_grid, z_grid = vortex.grid()
     ae_r_z = available_potential_energy(vortex, vortex.gridded_variable(vortex.angular_momentum), vortex.gridded_variable(vortex.entropy), r, z)
     return r_grid-r, z_grid-z, ae_r_z
+
+
+def pi_k_perturbations(vortex, r, z, v_range):
+    base_v = vortex.azimuthal_wind(r, z)
+    all_v = np.linspace(max(0., base_v-v_range), base_v+v_range, 100)
+    all_M = vortex.angular_momentum_from_azimuthal_wind(all_v, r)
+    perturbed_pi_k = np.squeeze(pi_k(vortex, all_M, r, z))
+    quadratic_perturbed_velocity = (all_v - base_v)**2
+    return all_v-base_v, perturbed_pi_k, quadratic_perturbed_velocity
