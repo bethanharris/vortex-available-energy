@@ -97,6 +97,12 @@ class Vortex:
     def mu(self, r, z):
         return self.angular_momentum(r, z)**2
 
+    def angular_momentum_from_azimuthal_wind(self, v, r):
+        return r * v + 0.5 * self.f * r**2
+
+    def azimuthal_wind_from_angular_momentum(self, M, r):
+        return M/r - 0.5 * self.f * r
+
     @staticmethod
     def chi(r):
         return 1./(2. * r**2)
