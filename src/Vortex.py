@@ -110,7 +110,3 @@ class Vortex:
 
 def smith_vortex():
     return Vortex(303., 2.12e-5, 95000., 50000., 8000.)
-
-
-def perturbed_vortex():
-    return Vortex(305., 2.12e-5, 93000., 30000., 8000.)
