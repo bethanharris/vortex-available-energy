@@ -43,6 +43,8 @@ def plot_available_energy_perturbations(vortex, r, z, save=False, show=True):
     plt.ylabel(r'$\mathregular{p_m - p_\star\;\left(hPa\right)}$', fontsize=18)
     plt.gca().tick_params(labelsize=14)
     plt.gca().set_facecolor('gray')
+    plt.gca().axhline(0, color='k', alpha=0.5)
+    plt.gca().axvline(0, color='k', alpha=0.5)
     cbar = plt.colorbar()
     cbar.set_label(r'$\mathregular{A_e\;\left(Jkg^{-1}\right)}$', fontsize=18)
     cbar.ax.tick_params(labelsize=14)
@@ -94,6 +96,28 @@ def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=Tr
     else:
         plt.close('all')
 
+    return
+
+
+def plot_kinetic_energy_perturbation_ratio(vortex, r, z, v_range, save=False, show=True):
+    perturbation_v, perturbation_pi_k, quadratic_perturbation_v = pi_k_perturbations(vortex, r, z, v_range)
+    ratio = quadratic_perturbation_v/perturbation_pi_k
+    zeros = np.where(perturbation_v == 0.)
+    ratio[zeros] = 1.
+    plt.figure()
+    plt.plot(perturbation_v, ratio, 'k-', linewidth=2)
+    plt.xlabel(r'$\mathregular{v - v_m\;\left(ms^{-1}\right)}$', fontsize=18)
+    plt.ylabel(r'$\mathregular{\frac{\left(v - v_m\right)^2}{2\Pi_k}}$', fontsize=18)
+    plt.gca().tick_params(labelsize=14)
+    plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km,\; v_m = %0.1f ms^{-1}}$' % (
+    r / 1000., z / 1000., vortex.azimuthal_wind(r, z)), fontsize=16)
+    plt.tight_layout()
+    if save:
+        plt.savefig('../results/ke_perturbation_ratio_r_%d_z_%d.png' % (r, z), dpi=300)
+    if show:
+        plt.show()
+    else:
+        plt.close('all')
     return
 
 
