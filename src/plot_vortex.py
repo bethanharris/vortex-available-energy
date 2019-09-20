@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from matplotlib.ticker import FormatStrFormatter
 from available_energy import *
 from Vortex import *
 
 
 def plot_variable(vortex, variable, label=''):
+    '''All-purpose generic filled-contour plotting function for gridded attributes of vortex.'''
     plt.figure()
     r_grid, z_grid = vortex.grid()
     plt.contourf(r_grid/1000., z_grid/1000., vortex.gridded_variable(variable), cmap=cm.YlGn)
@@ -15,6 +17,24 @@ def plot_variable(vortex, variable, label=''):
     cbar.set_label(label, fontsize=18)
     cbar.ax.tick_params(labelsize=14)
     plt.tight_layout()
+    plt.show()
+
+
+def plot_azimuthal_wind(vortex):
+    v = vortex.azimuthal_wind
+    grid_v = vortex.gridded_variable(v)
+    r_grid, z_grid = vortex.grid()
+    plt.figure(figsize=(6, 4.5))
+    ax = plt.gca()
+    v_ctr = ax.contour(r_grid/1000., z_grid/1000., grid_v, colors='k')
+    ax.clabel(v_ctr, v_ctr.levels, inline=True, fmt='%d', fontsize=14, colors='k')
+    ax.set_xlabel(r'$\mathregular{r\;\left(km\right)}$', fontsize=22)
+    ax.set_ylabel(r'$\mathregular{z\;\left(km\right)}$', fontsize=22)
+    ax.tick_params(labelsize=18)
+    ax.yaxis.set_ticks(np.arange(0, 17, 4))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
+    plt.tight_layout()
+    plt.savefig('../results/v_contour.pdf')
     plt.show()
 
 
@@ -153,5 +173,5 @@ def illustrate_lifting(vortex):
 
 if __name__ == '__main__':
     vortex = smith_vortex()
-    plot_available_energy_perturbations(vortex, 50000., 5000.)
+    plot_available_energy_perturbations(vortex, 50000., 1000.)
     illustrate_lifting(vortex)
