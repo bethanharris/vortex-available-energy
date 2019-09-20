@@ -109,4 +109,4 @@ class Vortex:
 
 
 def smith_vortex():
-    return Vortex(303., 2.12e-5, 95000., 50000., 8000.)
+    return Vortex(303., 2.12e-5, 95000., 40000., 8000.)
