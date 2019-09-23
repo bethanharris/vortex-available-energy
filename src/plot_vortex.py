@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from available_energy import *
-from Vortex import *
+from Vortex import Vortex
 
 
 def plot_variable(vortex, variable, label=''):
@@ -172,6 +172,6 @@ def illustrate_lifting(vortex):
 
 
 if __name__ == '__main__':
-    vortex = smith_vortex()
+    vortex = Vortex.smith()
     plot_available_energy_perturbations(vortex, 50000., 1000.)
     illustrate_lifting(vortex)

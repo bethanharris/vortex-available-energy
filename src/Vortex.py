@@ -107,6 +107,6 @@ class Vortex:
     def chi(r):
         return 1./(2. * r**2)
 
-
-def smith_vortex():
-    return Vortex(303., 2.12e-5, 95000., 40000., 8000.)
+    @classmethod
+    def smith(cls):
+        return cls(303., 2.12e-5, 95000., 40000., 8000.)
