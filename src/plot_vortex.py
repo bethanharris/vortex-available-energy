@@ -176,6 +176,58 @@ def plot_kinetic_energy_perturbation_ratio(vortex, r, z, v_range, save=False, sh
     return
 
 
+def plot_jacobian_ratio(vortex, save=False, show=True):
+    plt.figure(figsize=(6, 4.5))
+    ax = plt.gca()
+    r_grid, z_grid = vortex.grid()
+    plt.contourf(r_grid/1000., z_grid/1000., vortex.gridded_variable(vortex.jacobian_ratio), cmap=cm.Blues)
+    ax.set_xlabel(r'$\mathregular{r\;\left(km\right)}$', fontsize=20)
+    ax.set_ylabel(r'$\mathregular{z\;\left(km\right)}$', fontsize=20)
+    ax.tick_params(labelsize=16)
+    ax.yaxis.set_ticks(np.arange(0, 17, 4))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
+    cbar = plt.colorbar()
+    cbar.set_label(r'$\mathregular{\frac{J_{\mu p}}{J_{\mu p_0}}}$', fontsize=24)
+    cbar.ax.tick_params(labelsize=16)
+    plt.tight_layout()
+    if save:
+        plt.savefig('../results/jacobian_ratio.pdf')
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+
+def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
+    ratios = vortex.gridded_variable(vortex.eddy_kinetic_energy_ratio)
+    plt.figure(figsize=(6, 4.5))
+    ax = plt.gca()
+    r_grid, z_grid = vortex.grid()
+    levels = np.linspace(0., 3.5, 8, endpoint=True)
+    plt.contourf(r_grid/1000., z_grid/1000., ratios, levels, cmap=cm.Purples)
+    line_ctrs = ax.contour(r_grid/1000., z_grid/1000., ratios, [0.5, 1.], colors='k')
+    ax.clabel(line_ctrs, line_ctrs.levels, inline=True, fmt='%g', fontsize=14, colors='k')
+    ax.set_xlabel(r'$\mathregular{r\;\left(km\right)}$', fontsize=20)
+    ax.set_ylabel(r'$\mathregular{z\;\left(km\right)}$', fontsize=20)
+    ax.tick_params(labelsize=16)
+    ax.yaxis.set_ticks(np.arange(0, 17, 4))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
+    cbar = plt.colorbar(ticks=levels)
+    cbar.set_label(r'$\mathregular{\frac{\left(v - v_m\right)^2}{2\Pi_k}}$', fontsize=24)
+    cbar.ax.tick_params(labelsize=16)
+    save_name = '../results/jacobian_eke_pik_ratio'
+    if zoom:
+        ax.set_xlim([0., 50.])
+        save_name += '_zoom'
+    plt.tight_layout()
+    if save:
+        plt.savefig('{n:s}.pdf'.format(n=save_name))
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+
 def illustrate_lifting(vortex, save=False):
     r = 30000.
     z = 3000.
