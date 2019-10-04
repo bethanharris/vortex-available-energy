@@ -103,6 +103,51 @@ class Vortex:
     def azimuthal_wind_from_angular_momentum(self, M, r):
         return M/r - 0.5 * self.f * r
 
+    def dpsi_dr(self, r, z):
+        a = -(self.central_pressure - self.far_field_pressure) * self.radial_coefficient * self.radial_scale * np.exp(
+            -z / self.vertical_scale) * np.cos(0.5 * np.pi * z / self.vertical_top)
+        b = self.radial_coefficient * self.radial_scale
+        c = (self.central_pressure - self.far_field_pressure) / (self.g * self.vertical_scale) * np.exp(
+            -z / self.vertical_scale) * ((0.5 * np.pi * self.vertical_scale / self.vertical_top) * np.sin(
+            0.5 * np.pi * z / self.vertical_top) + np.cos(0.5 * np.pi * z / self.vertical_top))
+        d = (self.far_field_pressure / (self.Rd * self.surface_temperature)) * (1. - self.lapse_rate * z) ** (
+                    self.g / (self.Rd * self.surface_temperature * self.lapse_rate) - 1.)
+        numerator = b * c * np.exp(b / r) + c * r * np.exp(b / r) + b * d * np.exp(b / r) + d * r * np.exp(
+            b / r) - c * r
+        denominator = r * (c * np.exp(b / r) + d * np.exp(b / r) - c) ** 2
+        return a * numerator / denominator
+
+    def dpsi_dz(self, r, z):
+        a = -(self.central_pressure - self.far_field_pressure) * np.exp(
+            -(self.radial_coefficient * self.radial_scale) / r) * self.radial_coefficient * self.radial_scale * r
+        b = (self.central_pressure - self.far_field_pressure) / (self.g * self.vertical_scale) * (
+                    1. - np.exp(-(self.radial_coefficient * self.radial_scale) / r))
+        c = self.far_field_pressure / (self.Rd * self.surface_temperature)
+        d = self.g / (self.Rd * self.surface_temperature * self.lapse_rate) - 1.
+        m = self.vertical_scale
+        n = np.pi / (2. * self.vertical_top)
+        p = self.lapse_rate
+        numerator = m * n * (p * z - 1.) * np.sin(n * z) * (
+                    b * m * n * np.sin(n * z) + c * np.exp(z / m) * (1. - p * z) ** d) + b * (m ** 2) * (n ** 2) * (
+                                p * z - 1.) * np.cos(n * z) ** 2 + c * np.exp(z / m) * ((1. - p * z) ** d) * np.cos(
+            n * z) * (d * m * p + p * z - 1.)
+        denominator = m * (p * z - 1.) * (
+                    b * m * n * np.sin(n * z) + b * np.cos(n * z) + c * np.exp(z / m) * (1. - p * z) ** d) ** 2
+        return -a * numerator / denominator
+
+    def jacobian_mu_p(self, r, z):
+        jacobian = -self.density(r, z) * self.g * (self.f ** 2) * (r ** 3) + self.dpsi_dr(r, z) * self.pressure_vertical_gradient(r, z) - self.dpsi_dz(r, z) * self.pressure_radial_gradient(r, z)
+        return jacobian
+
+    def eddy_kinetic_energy_ratio(self, r, z):
+        ratio = -(self.jacobian_mu_p(r, z) * r) / (4. * self.g * self.density(r, z) * self.angular_momentum(r, z) ** 2)
+        return ratio
+
+    def jacobian_ratio(self, r, z):
+        resting_jacobian = -self.density(r, z) * self.g * (self.f**2) * (r**3)
+        ratio = self.jacobian_mu_p(r, z) / resting_jacobian
+        return ratio
+
     @staticmethod
     def chi(r):
         return 1./(2. * r**2)
