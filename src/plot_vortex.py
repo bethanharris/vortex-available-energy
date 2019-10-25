@@ -191,7 +191,7 @@ def plot_jacobian_ratio(vortex, save=False, show=True):
     cbar.ax.tick_params(labelsize=16)
     plt.tight_layout()
     if save:
-        plt.savefig('../results/jacobian_ratio.pdf')
+        plt.savefig('../results/jacobian_ratio.png', dpi=400)
     if show:
         plt.show()
     else:
@@ -221,7 +221,7 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
         save_name += '_zoom'
     plt.tight_layout()
     if save:
-        plt.savefig('{n:s}.pdf'.format(n=save_name))
+        plt.savefig('{n:s}.png'.format(n=save_name), dpi=400)
     if show:
         plt.show()
     else:
