@@ -1,19 +1,40 @@
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
-from available_energy import *
-from Vortex import Vortex
+from available_energy import (reference_position, position_at_isobaric_surface, pi_k_perturbations,
+                              available_potential_energy_perturbations_M_entropy,
+                              available_potential_energy_perturbations_mu_pressure,
+                              available_potential_energy_perturbations_r_z)
 
 
 def format_sci_string(x, decimal_places):
-    s = '{x:0.{ndp:d}e}'.format(x=x, ndp=decimal_places)
+    """String formatter for standard form numbers.
+
+    Parameters
+    ----------
+    x: Number to format
+    decimal_places: Number of decimal places to include
+
+    Returns
+    -------
+    String formatted as 'a \times 10^b'
+    """
+    s = '{x:0.{n:d}e}'.format(x=x, n=decimal_places)
     mantissa, exponent = s.split('e')
     return r'{m:s}\times 10^{{{e:d}}}'.format(m=mantissa, e=int(exponent))
 
 
 def plot_variable(vortex, variable, label=''):
-    '''All-purpose generic filled-contour plotting function for gridded attributes of vortex.'''
+    """Generic filled-contour plotting function for gridded fields of vortex.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class for vortex to be plotted
+    variable: method of Vortex class e.g. vortex.azimuthal_wind
+    label: (kwarg) string label for colorbar
+    """
     plt.figure()
     r_grid, z_grid = vortex.grid()
     plt.contourf(r_grid/1000., z_grid/1000., vortex.gridded_variable(variable), cmap=cm.YlGn)
@@ -28,6 +49,12 @@ def plot_variable(vortex, variable, label=''):
 
 
 def plot_azimuthal_wind(vortex):
+    """Plot contours of vortex azimuthal wind.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class
+    """
     v = vortex.azimuthal_wind
     grid_v = vortex.gridded_variable(v)
     r_grid, z_grid = vortex.grid()
@@ -46,6 +73,17 @@ def plot_azimuthal_wind(vortex):
 
 
 def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, show=True):
+    """Plot contours of vortex available energy for perturbations in M/entropy, mu/p_* and r/z at a fixed point.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class determining reference state
+    r: fixed radius (m)
+    z: fixed height (m)
+    title: (kwarg, bool) show fixed r/z position as figure title?
+    save: (kwarg, bool, default=False) save plots?
+    show: (kwarg, bool, default=True) show plots interactively?
+    """
     perturbation_M, perturbation_eta, ae_M_entropy = available_potential_energy_perturbations_M_entropy(vortex, r, z)
     perturbation_mu, perturbation_p, ae_mu_p = available_potential_energy_perturbations_mu_pressure(vortex, r, z)
     perturbation_r, perturbation_z, ae_r_z = available_potential_energy_perturbations_r_z(vortex, r, z)
@@ -116,16 +154,23 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     return
 
 
-def plot_kinetic_energy_perturbations(vortex, r, z, v_range, double_eke=False, save=False, show=True):
+def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=True):
+    """Plot comparison of eddy kinetic energy and Pi_k for perturbations around reference azimuthal wind at a point.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class determining reference state
+    r: radius (m)
+    z: height (m)
+    v_range: maximum range in azimuthal wind to sample around reference wind (in both directions) (m/s)
+    save: (kwarg, bool, default=False) save plots?
+    show: (kwarg, bool, default=True) show plots interactively?
+    """
     perturbation_v, perturbation_pi_k, quadratic_perturbation_v = pi_k_perturbations(vortex, r, z, v_range)
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
     plt.plot(perturbation_v, perturbation_pi_k, 'k-', linewidth=2, label='$\Pi_k$')
-    if double_eke:
-        plt.plot(perturbation_v, 2.*quadratic_perturbation_v, '--', color='gray', linewidth=2,
-                 label='$\left(v-v_m\\right)^2$')
-    else:
-        plt.plot(perturbation_v, quadratic_perturbation_v, '--', color='gray', linewidth=2,
+    plt.plot(perturbation_v, quadratic_perturbation_v, '--', color='gray', linewidth=2,
                  label='$\\frac{\left(v-v_m\\right)^2}{2}$')
     plt.xlabel(r'$\mathregular{v - v_m\;\left(ms^{-1}\right)}$', fontsize=20)
     plt.ylabel(r'$\mathregular{\left(Jkg^{-1}\right)}$', fontsize=20)
@@ -142,8 +187,6 @@ def plot_kinetic_energy_perturbations(vortex, r, z, v_range, double_eke=False, s
         plt.title(r'$\mathregular{v_m = %0.1f \;ms^{-1}}$' % base_v, fontsize=16)
     plt.tight_layout()
     save_name = '../results/ke_perturbation_r_%d_z_%d' % (r, z)
-    if double_eke:
-        save_name += '_double'
     if save:
         plt.savefig(save_name + '.png', dpi=400)
         plt.savefig(save_name + '.pdf')
@@ -154,29 +197,15 @@ def plot_kinetic_energy_perturbations(vortex, r, z, v_range, double_eke=False, s
     return
 
 
-def plot_kinetic_energy_perturbation_ratio(vortex, r, z, v_range, save=False, show=True):
-    perturbation_v, perturbation_pi_k, quadratic_perturbation_v = pi_k_perturbations(vortex, r, z, v_range)
-    ratio = quadratic_perturbation_v/perturbation_pi_k
-    zeros = np.where(perturbation_v == 0.)
-    ratio[zeros] = 1.
-    plt.figure()
-    plt.plot(perturbation_v, ratio, 'k-', linewidth=2)
-    plt.xlabel(r'$\mathregular{v - v_m\;\left(ms^{-1}\right)}$', fontsize=18)
-    plt.ylabel(r'$\mathregular{\frac{\left(v - v_m\right)^2}{2\Pi_k}}$', fontsize=18)
-    plt.gca().tick_params(labelsize=14)
-    plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km,\; v_m = %0.1f ms^{-1}}$' % (
-    r / 1000., z / 1000., vortex.azimuthal_wind(r, z)), fontsize=16)
-    plt.tight_layout()
-    if save:
-        plt.savefig('../results/ke_perturbation_ratio_r_%d_z_%d.png' % (r, z), dpi=300)
-    if show:
-        plt.show()
-    else:
-        plt.close('all')
-    return
-
-
 def plot_jacobian_ratio(vortex, save=False, show=True):
+    """Plot ratio of vortex Jacobian to resting Jacobian over domain.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class determining reference state
+    save: (kwarg, bool, default=False) save plot?
+    show: (kwarg, bool, default=True) show plot interactively?
+    """
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
     r_grid, z_grid = vortex.grid()
@@ -199,6 +228,15 @@ def plot_jacobian_ratio(vortex, save=False, show=True):
 
 
 def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
+    """Plot ratio of eddy kinetic energy to vortex Jacobian over domain.
+
+    Parameters
+    ----------
+    vortex: instance of Vortex class determining reference state
+    zoom: (kwarg, bool, default=False) plot inner 50 km only?
+    save: (kwarg, bool, default=False) save plot? #TODO: make save default for all plots
+    show: (kwarg, bool, default=True) show plot interactively?
+    """
     ratios = vortex.gridded_variable(vortex.eddy_kinetic_energy_ratio)
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -228,44 +266,68 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
         plt.close()
 
 
-def illustrate_lifting(vortex, save=False):
+def illustrate_lifting(save=False):
+    """Plot schematic illustrating the path along which a parcel is lifted to compute vortex available energy.
+
+    Uses parcel at r = 30km, z = 3km in Smith (2005) vortex, with M and entropy set to give a reference position
+    at r_* = 75km, z_* = 11km. Label positioning will need tweaking if example parcel is changed.
+
+    Parameters
+    ----------
+    save: (kwarg, bool, default=False) save plot? #TODO: add show as kwarg
+    """
+    # Set example parcel properties
     r = 30000.
     z = 3000.
     M = vortex.angular_momentum(75000., 11000.)
-    eta = vortex.entropy(75000., 11000.)
-    r_grid, z_grid = vortex.grid()
+    eta = vortex.entropy(75000., 11000.) #TODO: rename eta to entropy everywhere
+    # Find reference position and point to break integral path into thermodynamic/mechanical for example parcel
     r_mu, z_mu = position_at_isobaric_surface(vortex, M, vortex.pressure(r, z))
     r_ref, z_ref = reference_position(vortex, M, eta)
-    r_isobar_grid, z_isobar_grid = np.meshgrid(np.linspace(r_mu, r, 100, endpoint=True), np.linspace(z_mu, z, 100, endpoint=True))
-    r_M_grid, z_M_grid = np.meshgrid(np.linspace(r_ref, r_mu, 100, endpoint=True), np.linspace(z_ref, z_mu, 100, endpoint=True))
 
+    # Get complete r/z grid, and restricted grids that only cover branches of integral path
+    r_grid, z_grid = vortex.grid()
+    r_isobar_grid, z_isobar_grid = np.meshgrid(np.linspace(r_mu, r, 100, endpoint=True),
+                                               np.linspace(z_mu, z, 100, endpoint=True))
+    r_M_grid, z_M_grid = np.meshgrid(np.linspace(r_ref, r_mu, 100, endpoint=True),
+                                     np.linspace(z_ref, z_mu, 100, endpoint=True))
+
+    # Plot reference state isobars, isentropes and surfaces of constant angular momentum
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
     plt.contour(r_grid / 1000., z_grid / 1000., vortex.gridded_variable(vortex.pressure), colors='k', linestyles='--')
     plt.contour(r_grid / 1000., z_grid / 1000., vortex.gridded_variable(vortex.entropy), colors='k', linestyles='-')
     plt.contour(r_grid / 1000., z_grid / 1000., vortex.gridded_variable(vortex.angular_momentum), colors='k',
                 linestyles=':')
-    plt.contour(vortex.pressure(r_isobar_grid, z_isobar_grid), colors='orange', levels=[vortex.pressure(r, z)], extent=(r/1000.,r_mu/1000., z/1000., z_mu/1000.), linewidths=3)
-    plt.contour(vortex.angular_momentum(r_M_grid, z_M_grid), colors='orange', levels=[vortex.angular_momentum(r_ref, z_ref)], extent=(r_ref/1000., r_mu/1000., z_ref/1000., z_mu/1000.), linewidths=3)
+    # Plot contours to show integration paths
+    plt.contour(vortex.pressure(r_isobar_grid, z_isobar_grid), colors='orange', levels=[vortex.pressure(r, z)],
+                extent=(r / 1000., r_mu / 1000., z / 1000., z_mu / 1000.), linewidths=3)
+    plt.contour(vortex.angular_momentum(r_M_grid, z_M_grid), colors='orange',
+                levels=[vortex.angular_momentum(r_ref, z_ref)],
+                extent=(r_ref / 1000., r_mu / 1000., z_ref / 1000., z_mu / 1000.), linewidths=3)
+    # Plot & label points to show parcel's original position, reference position and position where path integral breaks
+    plt.plot(r/1000., z/1000., 'ko')
+    plt.annotate('$\left(r, z\\right)$', xy=(r / 1000., z / 1000.), xytext=(-18, -23), textcoords='offset points',
+                 bbox=dict(boxstyle="round", fc="w"), fontsize=14)
+    plt.plot(r_mu/1000., z_mu/1000., 'ko')
+    plt.annotate('$\left(r_{\mu}, z_{\mu}\\right)$', xy=(r_mu / 1000., z_mu / 1000.), xytext=(13, -7),
+                 textcoords='offset points', bbox=dict(boxstyle="round", fc="w"), fontsize=14)
+    plt.plot(r_ref/1000., z_ref/1000., 'ko')
+    plt.annotate('$\left(r_{\star}, z_{\star}\\right)$', xy=(r_ref / 1000., z_ref / 1000.), xytext=(15, 0),
+                 textcoords='offset points', bbox=dict(boxstyle="round", fc="w"), fontsize=14)
+    # General formatting of plot area
     plt.xlabel('r (km)', fontsize=20)
     plt.ylabel('z (km)', fontsize=20)
     ax.tick_params(labelsize=16)
     ax.yaxis.set_ticks(np.arange(0, 17, 4))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
-    plt.plot(r/1000., z/1000., 'ko')
-    plt.annotate('$\left(r, z\\right)$', xy=(r/1000., z/1000.), xytext=(-18, -23), textcoords='offset points', bbox=dict(boxstyle="round", fc="w"), fontsize=14)
-    plt.plot(r_mu/1000., z_mu/1000., 'ko')
-    plt.annotate('$\left(r_{\mu}, z_{\mu}\\right)$', xy=(r_mu / 1000., z_mu / 1000.), xytext=(13, -7), textcoords='offset points', bbox=dict(boxstyle="round", fc="w"), fontsize=14)
-    plt.plot(r_ref/1000., z_ref/1000., 'ko')
-    plt.annotate('$\left(r_{\star}, z_{\star}\\right)$', xy=(r_ref / 1000., z_ref / 1000.), xytext=(15, 0), textcoords='offset points', bbox=dict(boxstyle="round", fc="w"), fontsize=14)
     plt.tight_layout()
     if save:
-        plt.savefig('../results/lifting_illustration.png', dpi=400)
         plt.savefig('../results/lifting_illustration.pdf')
     plt.show()
 
 
 if __name__ == '__main__':
-    vortex = Vortex.smith()
-    plot_available_energy_perturbations(vortex, 40000., 5000.)
-    illustrate_lifting(vortex)
+    smith_vortex = Vortex.smith()
+    plot_available_energy_perturbations(smith_vortex, 40000., 5000.)
+    illustrate_lifting(smith_vortex)
