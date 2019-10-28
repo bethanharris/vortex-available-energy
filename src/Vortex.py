@@ -9,6 +9,7 @@ class Vortex:
     g: gravitational acceleration = 9.81 m/s^2
     Rd: specific gas constant for dry air = 287 J/kg/K
     cp: specific heat capacity at constant pressure for dry air = 1004.5 J/kg/K
+    p0: reference pressure for computing potential temperature = 10^5 Pa
     far_field_pressure: ambient surface pressure = 10^5 Pa
     radial_coefficient: radial scaling coefficient x = 1.048
     radial_edge: outer radial extent of default domain = 200 km
@@ -18,6 +19,7 @@ class Vortex:
     g = 9.81
     Rd = 287.
     cp = 1004.5
+    p0 = 100000.
     far_field_pressure = 100000.
     radial_coefficient = 1.048
     radial_edge = 200000.
@@ -484,6 +486,6 @@ class Vortex:
 
         Returns
         -------
-        Vortex object with properties of Smith (2005).
+        Vortex object with properties described in Appendix B of Smith (2005).
         """
         return cls(303., 2.12e-5, 95000., 5.0e-5, 40000., 8000.)
