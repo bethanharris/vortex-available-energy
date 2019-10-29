@@ -46,7 +46,7 @@ class Vortex:
         self.vertical_scale = zs
 
     def grid(self, return_lists=False):
-        """Create radius-height grid from r=1km to radial_edge, z=1km to vertical top, 1km spacing in both dimensions.
+        """Create radius-height grid from r=1km to radial_edge, z=0km to vertical top, 1km spacing in both dimensions.
 
         Parameters
         ----------
@@ -58,7 +58,7 @@ class Vortex:
         If return_lists True: 1D numpy arrays r_list, z_list specifying r/z points used on grid.
         """
         r_list = np.linspace(1000., self.radial_edge, int(self.radial_edge / 1000.), endpoint=True)
-        z_list = np.linspace(1000., self.vertical_top, int(self.vertical_top / 1000.), endpoint=True)
+        z_list = np.linspace(0., self.vertical_top, int(self.vertical_top / 1000.) + 1, endpoint=True)
         r_grid, z_grid = np.meshgrid(r_list, z_list)
         if return_lists:
             return r_list, z_list
@@ -488,4 +488,4 @@ class Vortex:
         -------
         Vortex object with properties described in Appendix B of Smith (2005).
         """
-        return cls(303., 2.12e-5, 95000., 5.0e-5, 40000., 8000.)
+        return cls(303., 2.12e-5, 95000., 5.e-5, 40000., 8000.)
