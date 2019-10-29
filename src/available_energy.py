@@ -414,18 +414,17 @@ def vortex_available_energy_perturbations_mu_pressure(vortex, r, z):
     # Compute reference values of mu and p_* at (r, z)
     base_mu = vortex.mu(r, z)
     base_pressure = vortex.pressure(r, z)
-    # Create grids of perturbed specific angular momentum and entropy comprising 100 evenly-spaced sample points
-    # between their minimum/maximum values anywhere in the vortex domain
-    all_M = vortex.gridded_variable(vortex.angular_momentum)
-    all_entropy = vortex.gridded_variable(vortex.entropy)
-    M_grid, entropy_grid = np.meshgrid(np.linspace(all_M.min(), all_M.max(), 100),
-                                       np.linspace(all_entropy.min(), all_entropy.max(), 100)) #TODO: output from M/eta perturb fn
+    # Get grids of specific angular momentum and entropy perturbations comprising 100 evenly-spaced sample points
+    # between their minimum/maximum values anywhere in the vortex domain, and vortex available energy
+    # at perturbed values
+    M_perturbations, entropy_perturbations, ae_M_entropy = vortex_available_energy_perturbations_M_entropy(vortex, r, z)
+    # Convert M and entropy perturbations to actual perturbed values
+    M_grid = M_perturbations + vortex.angular_momentum(r, z)
+    entropy_grid = entropy_perturbations + vortex.entropy(r, z)
     # Transform M and entropy perturbed values into mu and p_*
     mu_grid = M_grid ** 2
     r_ref, z_ref = reference_position(vortex, M_grid, entropy_grid)
     p_ref_grid = vortex.pressure(r_ref, z_ref)
-    # Compute vortex available energy at (r, z) with perturbed angular momentum/entropy values
-    ae_M_entropy = vortex_available_energy(vortex, M_grid, entropy_grid, r, z)
     return base_mu - mu_grid, base_pressure - p_ref_grid, ae_M_entropy
 
 
