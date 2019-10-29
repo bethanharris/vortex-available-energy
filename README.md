@@ -25,6 +25,6 @@ Running
 ```bash
 python plot_vortex.py
 ```
-will generate all figures from Tailleux and Harris (2019) and save them to the [results](results) folder.
+from the src directory will generate all figures from Tailleux and Harris (2019) and save them to the [results](results) folder.
 
 Tested using python 3.7.3 with numpy 1.16.4 and matplotlib 3.1.0.
