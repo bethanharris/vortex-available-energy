@@ -242,8 +242,8 @@ def position_at_isobaric_surface(vortex, angular_momentum_parcel, reference_pres
     return r_conserving_angular_momentum, mid_z_new
 
 
-def available_elastic_energy(vortex, entropy, p, r, z): #TODO: rename available acoustic energy
-    """Compute available elastic energy Pi_1 (Equation 3.9, Tailleux & Harris 2019) for parcel relative to vortex.
+def available_acoustic_energy(vortex, entropy, p, r, z):
+    """Compute available acoustic energy Pi_1 (Equation 3.9, Tailleux & Harris 2019) for parcel relative to vortex.
 
     Parameters
     ----------
@@ -256,7 +256,7 @@ def available_elastic_energy(vortex, entropy, p, r, z): #TODO: rename available 
 
     Returns
     -------
-    Parcel's available elastic energy (J/kg)
+    Parcel's available acoustic energy (J/kg)
     """
     temperature_in_situ = temperature_from_entropy(vortex, entropy, p)
     density_in_situ = p/(vortex.Rd * temperature_in_situ)
@@ -266,7 +266,7 @@ def available_elastic_energy(vortex, entropy, p, r, z): #TODO: rename available 
     return enthalpy_in_situ - enthalpy_at_pref + pressure_head
 
 
-def available_potential_energy(vortex, M, entropy, r, z): #TODO: rename vortex_available_energy
+def vortex_available_energy(vortex, M, entropy, r, z):
     """Compute parcel's vortex available energy A_e (Equation 3.13, Tailleux & Harris 2019).
 
     Parameters
@@ -343,7 +343,7 @@ def pi_k(vortex, M, r, z):
     return M_terms + geopotential_terms
 
 
-def available_energy(vortex, M, entropy, p, r, z):
+def total_available_energy(vortex, M, entropy, p, r, z):
     """Compute sum of available acoustic energy and vortex available energy, Pi_1 + A_e.
 
     Parameters
@@ -360,12 +360,12 @@ def available_energy(vortex, M, entropy, p, r, z):
     -------
     Sum of available acoustic energy and vortex available energy (J/kg).
     """
-    aee = available_elastic_energy(vortex, entropy, p, r, z)
-    ape = available_potential_energy(vortex, M, entropy, r, z)
-    return aee + ape
+    aae = available_acoustic_energy(vortex, entropy, p, r, z)
+    ape = vortex_available_energy(vortex, M, entropy, r, z)
+    return aae + ape
 
 
-def available_potential_energy_perturbations_M_entropy(vortex, r, z):
+def vortex_available_energy_perturbations_M_entropy(vortex, r, z):
     """Compute vortex available energy for a parcel at a fixed position with perturbations in specfic angular
     momentum and entropy.
 
@@ -391,11 +391,11 @@ def available_potential_energy_perturbations_M_entropy(vortex, r, z):
     M_grid, entropy_grid = np.meshgrid(np.linspace(all_M.min(), all_M.max(), 100),
                                        np.linspace(all_entropy.min(), all_entropy.max(), 100))
     # Compute vortex available energy at (r, z) with perturbed angular momentum/entropy values
-    ae_M_entropy = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
+    ae_M_entropy = vortex_available_energy(vortex, M_grid, entropy_grid, r, z)
     return M_grid-base_M, entropy_grid-base_entropy, ae_M_entropy
 
 
-def available_potential_energy_perturbations_mu_pressure(vortex, r, z):
+def vortex_available_energy_perturbations_mu_pressure(vortex, r, z):
     """Compute vortex available energy for a parcel at a fixed position with perturbations in mu (specific angular
     momentum squared) and p_* (the reference pressure at the parcel's reference position (r_*, z_*)).
 
@@ -425,11 +425,11 @@ def available_potential_energy_perturbations_mu_pressure(vortex, r, z):
     r_ref, z_ref = reference_position(vortex, M_grid, entropy_grid)
     p_ref_grid = vortex.pressure(r_ref, z_ref)
     # Compute vortex available energy at (r, z) with perturbed angular momentum/entropy values
-    ae_M_entropy = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
+    ae_M_entropy = vortex_available_energy(vortex, M_grid, entropy_grid, r, z)
     return base_mu - mu_grid, base_pressure - p_ref_grid, ae_M_entropy
 
 
-def available_potential_energy_perturbations_r_z(vortex, r, z):
+def vortex_available_energy_perturbations_r_z(vortex, r, z):
     """Compute vortex available energy for parcels from all positions in the reference state when
     brought adiabatically along constant angular momentum surfaces to (r, z).
 
@@ -449,8 +449,8 @@ def available_potential_energy_perturbations_r_z(vortex, r, z):
     # Get r/z grid of whole domain
     r_grid, z_grid = vortex.grid()
     # Compute vortex available energy for each reference state parcel when brought to (r, z)
-    ae_r_z = available_potential_energy(vortex, vortex.gridded_variable(vortex.angular_momentum),
-                                        vortex.gridded_variable(vortex.entropy), r, z)
+    ae_r_z = vortex_available_energy(vortex, vortex.gridded_variable(vortex.angular_momentum),
+                                     vortex.gridded_variable(vortex.entropy), r, z)
     return r_grid - r, z_grid - z, ae_r_z
 
 

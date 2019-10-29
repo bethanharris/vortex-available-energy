@@ -5,9 +5,9 @@ import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
 from Vortex import Vortex
 from available_energy import (reference_position, position_at_isobaric_surface, pi_k_perturbations,
-                              available_potential_energy_perturbations_M_entropy,
-                              available_potential_energy_perturbations_mu_pressure,
-                              available_potential_energy_perturbations_r_z)
+                              vortex_available_energy_perturbations_M_entropy,
+                              vortex_available_energy_perturbations_mu_pressure,
+                              vortex_available_energy_perturbations_r_z)
 
 
 def format_sci_string(x, decimal_places):
@@ -85,9 +85,9 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     save: (kwarg, bool, default=False) save plots?
     show: (kwarg, bool, default=True) show plots interactively?
     """
-    perturbation_M, perturbation_entropy, ae_M_entropy = available_potential_energy_perturbations_M_entropy(vortex, r, z)
-    perturbation_mu, perturbation_p, ae_mu_p = available_potential_energy_perturbations_mu_pressure(vortex, r, z)
-    perturbation_r, perturbation_z, ae_r_z = available_potential_energy_perturbations_r_z(vortex, r, z)
+    perturbation_M, perturbation_entropy, ae_M_entropy = vortex_available_energy_perturbations_M_entropy(vortex, r, z)
+    perturbation_mu, perturbation_p, ae_mu_p = vortex_available_energy_perturbations_mu_pressure(vortex, r, z)
+    perturbation_r, perturbation_z, ae_r_z = vortex_available_energy_perturbations_r_z(vortex, r, z)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
