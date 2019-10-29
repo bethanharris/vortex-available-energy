@@ -27,6 +27,25 @@ def format_sci_string(x, decimal_places):
     return r'{m:s}\times 10^{{{e:d}}}'.format(m=mantissa, e=int(exponent))
 
 
+def save_or_show_plot(filename, save, show):
+    """Save figure to results folder, show figures interactively, or both.
+
+    Parameters
+    ----------
+    filename: string for name of file
+    save: (bool) save plot?
+    show: (bool) show plot interactively?
+    """
+    if save:
+        # Save figure to results folder as pdf
+        save_path = '../results/{f:s}.pdf'.format(f=filename)
+        plt.savefig(save_path)
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+
 def plot_variable(vortex, variable, label=''):
     """Generic filled-contour plotting function for gridded fields of vortex.
 
@@ -49,12 +68,14 @@ def plot_variable(vortex, variable, label=''):
     plt.show()
 
 
-def plot_azimuthal_wind(vortex):
+def plot_azimuthal_wind(vortex, save=True, show=False):
     """Plot contours of vortex azimuthal wind.
 
     Parameters
     ----------
     vortex: instance of Vortex class
+    save: (kwarg, bool, default=True) save plot?
+    show: (kwarg, bool, default=False) show plot interactively?
     """
     v = vortex.azimuthal_wind
     grid_v = vortex.gridded_variable(v)
@@ -69,11 +90,10 @@ def plot_azimuthal_wind(vortex):
     ax.yaxis.set_ticks(np.arange(0, 17, 4))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
     plt.tight_layout()
-    plt.savefig('../results/v_contour.pdf')
-    plt.show()
+    save_or_show_plot('v_contour', save, show)
 
 
-def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, show=True):
+def plot_available_energy_perturbations(vortex, r, z, title=True, save=True, show=False):
     """Plot contours of vortex available energy for perturbations in M/entropy, mu/p_* and r/z at a fixed point.
 
     Parameters
@@ -82,8 +102,8 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     r: fixed radius (m)
     z: fixed height (m)
     title: (kwarg, bool) show fixed r/z position as figure title?
-    save: (kwarg, bool, default=False) save plots?
-    show: (kwarg, bool, default=True) show plots interactively?
+    save: (kwarg, bool, default=True) save plots?
+    show: (kwarg, bool, default=False) show plots interactively?
     """
     perturbation_M, perturbation_entropy, ae_M_entropy = vortex_available_energy_perturbations_M_entropy(vortex, r, z)
     perturbation_mu, perturbation_p, ae_mu_p = vortex_available_energy_perturbations_mu_pressure(vortex, r, z)
@@ -103,11 +123,9 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     cbar.ax.tick_params(labelsize=16)
     cbar.ax.yaxis.offsetText.set(size=16)
     if title:
-        plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km}$' % (r/1000., z/1000.), fontsize=14)
+        plt.title(r'$\mathregular{r = {r:g} \,km,\; z = {z:g}\, km}$'.format(r=r / 1000., z=z / 1000.), fontsize=14)
     plt.tight_layout()
-    if save:
-        plt.savefig('../results/ae_perturbation_M_entropy_r_%d_z_%d.png' % (r, z), dpi=400)
-        plt.savefig('../results/ae_perturbation_M_entropy_r_%d_z_%d.pdf' % (r, z))
+    save_or_show_plot('ae_perturbation_M_entropy_r_{r:d}_z_{z:d}.pdf'.format(r=r, z=z), save, show)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -123,11 +141,9 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     cbar.ax.tick_params(labelsize=16)
     cbar.ax.yaxis.offsetText.set(size=16)
     if title:
-        plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km}$' % (r/1000., z/1000.), fontsize=16)
+        plt.title(r'$\mathregular{r = {r:g} \,km,\; z = {z:g}\, km}$'.format(r=r / 1000., z=z / 1000.), fontsize=14)
     plt.tight_layout()
-    if save:
-        plt.savefig('../results/ae_perturbation_mu_p_r_%d_z_%d.png' % (r, z), dpi=400)
-        plt.savefig('../results/ae_perturbation_mu_p_r_%d_z_%d.pdf' % (r, z))
+    save_or_show_plot('ae_perturbation_mu_p_r_{r:d}_z_{z:d}.pdf'.format(r=r, z=z), save, show)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -141,21 +157,12 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     cbar.ax.tick_params(labelsize=16)
     cbar.ax.yaxis.offsetText.set(size=16)
     if title:
-        plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km}$' % (r / 1000., z / 1000.), fontsize=14)
+        plt.title(r'$\mathregular{r = {r:g} \,km,\; z = {z:g}\, km}$'.format(r=r/1000., z=z/1000.), fontsize=14)
     plt.tight_layout()
-    if save:
-        plt.savefig('../results/ae_perturbation_rzref_r_%d_z_%d.png' % (r, z), dpi=400)
-        plt.savefig('../results/ae_perturbation_rzref_r_%d_z_%d.pdf' % (r, z))
-
-    if show:
-        plt.show()
-    else:
-        plt.close('all')
-
-    return
+    save_or_show_plot('ae_perturbation_rzref_r_{r:d}_z_{z:d}.pdf'.format(r=r, z=z), save, show)
 
 
-def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=True):
+def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=True, show=False):
     """Plot comparison of eddy kinetic energy and Pi_k for perturbations around reference azimuthal wind at a point.
 
     Parameters
@@ -164,8 +171,8 @@ def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=Tr
     r: radius (m)
     z: height (m)
     v_range: maximum range in azimuthal wind to sample around reference wind (in both directions) (m/s)
-    save: (kwarg, bool, default=False) save plots?
-    show: (kwarg, bool, default=True) show plots interactively?
+    save: (kwarg, bool, default=True) save plots?
+    show: (kwarg, bool, default=False) show plots interactively?
     """
     perturbation_v, perturbation_pi_k, quadratic_perturbation_v = pi_k_perturbations(vortex, r, z, v_range)
     plt.figure(figsize=(6, 4.5))
@@ -187,25 +194,18 @@ def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=False, show=Tr
     else:
         plt.title(r'$\mathregular{v_m = %0.1f \;ms^{-1}}$' % base_v, fontsize=16)
     plt.tight_layout()
-    save_name = '../results/ke_perturbation_r_%d_z_%d' % (r, z)
-    if save:
-        plt.savefig(save_name + '.png', dpi=400)
-        plt.savefig(save_name + '.pdf')
-    if show:
-        plt.show()
-    else:
-        plt.close('all')
+    save_or_show_plot('ke_perturbation_r_{r:d}_z_{z:d}'.format(r=r, z=z), save, show)
     return
 
 
-def plot_jacobian_ratio(vortex, save=False, show=True):
+def plot_jacobian_ratio(vortex, save=True, show=False):
     """Plot ratio of vortex Jacobian to resting Jacobian over domain.
 
     Parameters
     ----------
     vortex: instance of Vortex class determining reference state
-    save: (kwarg, bool, default=False) save plot?
-    show: (kwarg, bool, default=True) show plot interactively?
+    save: (kwarg, bool, default=True) save plot?
+    show: (kwarg, bool, default=False) show plot interactively?
     """
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -220,23 +220,18 @@ def plot_jacobian_ratio(vortex, save=False, show=True):
     cbar.set_label(r'$\mathregular{\frac{J_{\mu p}}{J_{\mu p_0}}}$', fontsize=24)
     cbar.ax.tick_params(labelsize=16)
     plt.tight_layout()
-    if save:
-        plt.savefig('../results/jacobian_ratio.png', dpi=400)
-    if show:
-        plt.show()
-    else:
-        plt.close()
+    save_or_show_plot('jacobian_ratio', save, show)
 
 
-def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
+def plot_jacobian_eke_ratio(vortex, zoom=False, save=True, show=False):
     """Plot ratio of eddy kinetic energy to vortex Jacobian over domain.
 
     Parameters
     ----------
     vortex: instance of Vortex class determining reference state
     zoom: (kwarg, bool, default=False) plot inner 50 km only?
-    save: (kwarg, bool, default=False) save plot? #TODO: make save default for all plots
-    show: (kwarg, bool, default=True) show plot interactively?
+    save: (kwarg, bool, default=True) save plot?
+    show: (kwarg, bool, default=False) show plot interactively?
     """
     ratios = vortex.gridded_variable(vortex.eddy_kinetic_energy_ratio)
     plt.figure(figsize=(6, 4.5))
@@ -254,20 +249,15 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=False, show=True):
     cbar = plt.colorbar(ticks=levels)
     cbar.set_label(r'$\mathregular{\frac{\left(v - v_m\right)^2}{2\Pi_k}}$', fontsize=24)
     cbar.ax.tick_params(labelsize=16)
-    save_name = '../results/jacobian_eke_pik_ratio'
+    save_name = 'jacobian_eke_pik_ratio'
     if zoom:
         ax.set_xlim([0., 50.])
         save_name += '_zoom'
     plt.tight_layout()
-    if save:
-        plt.savefig('{n:s}.png'.format(n=save_name), dpi=400)
-    if show:
-        plt.show()
-    else:
-        plt.close()
+    save_or_show_plot(save_name, save, show)
 
 
-def illustrate_lifting(save=False):
+def illustrate_lifting(save=True, show=False):
     """Plot schematic illustrating the path along which a parcel is lifted to compute vortex available energy.
 
     Uses parcel at r = 30km, z = 3km in Smith (2005) vortex, with M and entropy set to give a reference position
@@ -275,7 +265,8 @@ def illustrate_lifting(save=False):
 
     Parameters
     ----------
-    save: (kwarg, bool, default=False) save plot? #TODO: add show as kwarg
+    save: (kwarg, bool, default=True) save plot?
+    show: (kwarg, bool, default=False) show plot interactively?
     """
     # Set example parcel properties
     vortex = Vortex.smith()
@@ -324,9 +315,7 @@ def illustrate_lifting(save=False):
     ax.yaxis.set_ticks(np.arange(0, 17, 4))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
     plt.tight_layout()
-    if save:
-        plt.savefig('../results/lifting_illustration.pdf')
-    plt.show()
+    save_or_show_plot('lifting_illustration', save, show)
 
 
 if __name__ == '__main__':
