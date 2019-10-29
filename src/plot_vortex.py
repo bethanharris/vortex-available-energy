@@ -3,6 +3,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.ticker import FormatStrFormatter
+from Vortex import Vortex
 from available_energy import (reference_position, position_at_isobaric_surface, pi_k_perturbations,
                               available_potential_energy_perturbations_M_entropy,
                               available_potential_energy_perturbations_mu_pressure,
@@ -277,6 +278,7 @@ def illustrate_lifting(save=False):
     save: (kwarg, bool, default=False) save plot? #TODO: add show as kwarg
     """
     # Set example parcel properties
+    vortex = Vortex.smith()
     r = 30000.
     z = 3000.
     M = vortex.angular_momentum(75000., 11000.)
