@@ -85,13 +85,13 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
     save: (kwarg, bool, default=False) save plots?
     show: (kwarg, bool, default=True) show plots interactively?
     """
-    perturbation_M, perturbation_eta, ae_M_entropy = available_potential_energy_perturbations_M_entropy(vortex, r, z)
+    perturbation_M, perturbation_entropy, ae_M_entropy = available_potential_energy_perturbations_M_entropy(vortex, r, z)
     perturbation_mu, perturbation_p, ae_mu_p = available_potential_energy_perturbations_mu_pressure(vortex, r, z)
     perturbation_r, perturbation_z, ae_r_z = available_potential_energy_perturbations_r_z(vortex, r, z)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
-    plt.contourf(perturbation_M/1.e6, perturbation_eta, ae_M_entropy, 20, cmap=cm.gist_heat_r)
+    plt.contourf(perturbation_M/1.e6, perturbation_entropy, ae_M_entropy, 20, cmap=cm.gist_heat_r)
     plt.xlabel(r'$\mathregular{M - M_m\;\left(10^6\,m^2s^{-1}\right)}$', fontsize=20)
     plt.ylabel(r'$\mathregular{\eta - \eta_m\;\left(Jkg^{-1}K^{-1}\right)}$', fontsize=20)
     ax.tick_params(labelsize=16)
@@ -106,8 +106,8 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=False, sh
         plt.title(r'$\mathregular{r = %g \,km,\; z = %g\, km}$' % (r/1000., z/1000.), fontsize=14)
     plt.tight_layout()
     if save:
-        plt.savefig('../results/ae_perturbation_M_eta_r_%d_z_%d.png' % (r, z), dpi=400)
-        plt.savefig('../results/ae_perturbation_M_eta_r_%d_z_%d.pdf' % (r, z))
+        plt.savefig('../results/ae_perturbation_M_entropy_r_%d_z_%d.png' % (r, z), dpi=400)
+        plt.savefig('../results/ae_perturbation_M_entropy_r_%d_z_%d.pdf' % (r, z))
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -282,10 +282,10 @@ def illustrate_lifting(save=False):
     r = 30000.
     z = 3000.
     M = vortex.angular_momentum(75000., 11000.)
-    eta = vortex.entropy(75000., 11000.) #TODO: rename eta to entropy everywhere
+    entropy = vortex.entropy(75000., 11000.)
     # Find reference position and point to break integral path into thermodynamic/mechanical for example parcel
     r_mu, z_mu = position_at_isobaric_surface(vortex, M, vortex.pressure(r, z))
-    r_ref, z_ref = reference_position(vortex, M, eta)
+    r_ref, z_ref = reference_position(vortex, M, entropy)
 
     # Get complete r/z grid, and restricted grids that only cover branches of integral path
     r_grid, z_grid = vortex.grid()

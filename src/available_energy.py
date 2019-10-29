@@ -266,14 +266,14 @@ def available_elastic_energy(vortex, entropy, p, r, z): #TODO: rename available 
     return enthalpy_in_situ - enthalpy_at_pref + pressure_head
 
 
-def available_potential_energy(vortex, M, eta, r, z): #TODO: rename vortex_available_energy
+def available_potential_energy(vortex, M, entropy, r, z): #TODO: rename vortex_available_energy
     """Compute parcel's vortex available energy A_e (Equation 3.13, Tailleux & Harris 2019).
 
     Parameters
     ----------
     vortex: instance of Vortex class determining reference state
     M: parcel's specific angular momentum (m^2/s)
-    eta: parcel's specific entropy (J/kg/K)
+    entropy: parcel's specific entropy (J/kg/K)
     r: parcel's radius (m)
     z: parcel's height (m)
     Parcel properties accepted as floats to compute for single parcel or numpy arrays to compute for many parcels.
@@ -283,24 +283,24 @@ def available_potential_energy(vortex, M, eta, r, z): #TODO: rename vortex_avail
     Vortex available energy A_e (J/kg)
     """
     # Compute terms of A_e according to Equation 3.13 (Tailleux & Harris, 2019)
-    r_ref, z_ref = reference_position(vortex, M, eta)
+    r_ref, z_ref = reference_position(vortex, M, entropy)
     M_terms = 0.5 * M**2 * (1. / r ** 2 - 1. / r_ref ** 2) + 0.125 * vortex.f ** 2 * (r ** 2 - r_ref ** 2)
     geopotential_terms = vortex.geopotential(z) - vortex.geopotential(z_ref)
-    temperature_at_p0 = temperature_from_entropy(vortex, eta, vortex.pressure(r, z))
+    temperature_at_p0 = temperature_from_entropy(vortex, entropy, vortex.pressure(r, z))
     enthalpy_at_p0 = vortex.cp * temperature_at_p0
     enthalpy_at_reference = vortex.cp * lifted_temperature(vortex, temperature_at_p0, vortex.pressure(r, z),
                                                            vortex.pressure(r_ref, z_ref))
     return M_terms + geopotential_terms + enthalpy_at_p0 - enthalpy_at_reference
 
 
-def pi_e(vortex, M, eta, r, z):
+def pi_e(vortex, M, entropy, r, z):
     """Compute thermodynamic component Pi_e of vortex available energy A_e (Equation 3.19, Tailleux & Harris 2019).
 
     Parameters
     ----------
     vortex: instance of Vortex class determining reference state
     M: parcel's specific angular momentum (m^2/s)
-    eta: parcel's specific entropy (J/kg/K)
+    entropy: parcel's specific entropy (J/kg/K)
     r: parcel's radius (m)
     z: parcel's height (m)
     Parcel properties accepted as floats to compute for single parcel or numpy arrays to compute for many parcels.
@@ -311,12 +311,13 @@ def pi_e(vortex, M, eta, r, z):
     """
     # Compute terms of Pi_e according to Equation 3.19 (Tailleux & Harris, 2019)
     r_mu, z_mu = position_at_isobaric_surface(vortex, M, vortex.pressure(r, z))
-    r_ref, z_ref = reference_position(vortex, M, eta)
+    r_ref, z_ref = reference_position(vortex, M, entropy)
     M_terms = 0.5 * M**2 * (1. / r_mu ** 2 - 1. / r_ref ** 2) + 0.125 * vortex.f ** 2 * (r_mu ** 2 - r_ref ** 2)
     geopotential_terms = vortex.geopotential(z_mu) - vortex.geopotential(z_ref)
-    temperature_at_p0 = temperature_from_entropy(vortex, eta, vortex.pressure(r, z))
+    temperature_at_p0 = temperature_from_entropy(vortex, entropy, vortex.pressure(r, z))
     enthalpy_at_p0 = vortex.cp * temperature_at_p0
-    enthalpy_at_reference = vortex.cp * lifted_temperature(vortex, temperature_at_p0, vortex.pressure(r, z), vortex.pressure(r_ref, z_ref))
+    enthalpy_at_reference = vortex.cp * lifted_temperature(vortex, temperature_at_p0, vortex.pressure(r, z),
+                                                           vortex.pressure(r_ref, z_ref))
     return M_terms + geopotential_terms + enthalpy_at_p0 - enthalpy_at_reference
 
 
@@ -342,14 +343,14 @@ def pi_k(vortex, M, r, z):
     return M_terms + geopotential_terms
 
 
-def available_energy(vortex, M, eta, p, r, z):
+def available_energy(vortex, M, entropy, p, r, z):
     """Compute sum of available acoustic energy and vortex available energy, Pi_1 + A_e.
 
     Parameters
     ----------
     vortex: instance of Vortex class determining reference state
     M: parcel's specific angular momentum (m^2/s)
-    eta: parcel's specific entropy (J/kg/K)
+    entropy: parcel's specific entropy (J/kg/K)
     p: parcel's pressure (Pa)
     r: parcel's radius (m)
     z: parcel's height (m)
@@ -359,8 +360,8 @@ def available_energy(vortex, M, eta, p, r, z):
     -------
     Sum of available acoustic energy and vortex available energy (J/kg).
     """
-    aee = available_elastic_energy(vortex, eta, p, r, z)
-    ape = available_potential_energy(vortex, M, eta, r, z)
+    aee = available_elastic_energy(vortex, entropy, p, r, z)
+    ape = available_potential_energy(vortex, M, entropy, r, z)
     return aee + ape
 
 
@@ -390,8 +391,8 @@ def available_potential_energy_perturbations_M_entropy(vortex, r, z):
     M_grid, entropy_grid = np.meshgrid(np.linspace(all_M.min(), all_M.max(), 100),
                                        np.linspace(all_entropy.min(), all_entropy.max(), 100))
     # Compute vortex available energy at (r, z) with perturbed angular momentum/entropy values
-    ae_M_eta = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
-    return M_grid-base_M, entropy_grid-base_entropy, ae_M_eta
+    ae_M_entropy = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
+    return M_grid-base_M, entropy_grid-base_entropy, ae_M_entropy
 
 
 def available_potential_energy_perturbations_mu_pressure(vortex, r, z):
@@ -424,8 +425,8 @@ def available_potential_energy_perturbations_mu_pressure(vortex, r, z):
     r_ref, z_ref = reference_position(vortex, M_grid, entropy_grid)
     p_ref_grid = vortex.pressure(r_ref, z_ref)
     # Compute vortex available energy at (r, z) with perturbed angular momentum/entropy values
-    ae_M_eta = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
-    return base_mu - mu_grid, base_pressure - p_ref_grid, ae_M_eta
+    ae_M_entropy = available_potential_energy(vortex, M_grid, entropy_grid, r, z)
+    return base_mu - mu_grid, base_pressure - p_ref_grid, ae_M_entropy
 
 
 def available_potential_energy_perturbations_r_z(vortex, r, z):
