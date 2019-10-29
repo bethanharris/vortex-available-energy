@@ -427,8 +427,9 @@ class Vortex:
         -------
         Value of Jacobian at (r, z) according to Tailleux & Harris, Equation 3.25 (kg m / s^4).
         """
-        jacobian = -(self.density(r, z) * self.g * (self.f ** 2) * (r ** 3) + self.dpsi_dr(r, z) *
-                     self.pressure_vertical_gradient(r, z) - self.dpsi_dz(r, z) * self.pressure_radial_gradient(r, z))
+        jacobian = (-self.density(r, z) * self.g * (self.f ** 2) * (r ** 3)
+                    + self.dpsi_dr(r,z) * self.pressure_vertical_gradient(r, z)
+                    - self.dpsi_dz(r, z) * self.pressure_radial_gradient(r, z))
         return jacobian
 
     def eddy_kinetic_energy_ratio(self, r, z):
