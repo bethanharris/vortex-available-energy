@@ -319,6 +319,9 @@ def illustrate_lifting(save=True, show=False):
 
 
 if __name__ == '__main__':
+    # Create figures from Tailleux & Harris (2019) and save to results folder
     smith_vortex = Vortex.smith()
+    plot_azimuthal_wind(smith_vortex)
+    illustrate_lifting()
+    plot_jacobian_ratio(smith_vortex)
     plot_available_energy_perturbations(smith_vortex, 40000., 5000.)
-    illustrate_lifting(smith_vortex)
