@@ -5,7 +5,7 @@ Analyse available energetics of a dry axisymmetric atmospheric vortex as describ
 
 [Vortex.py](src/Vortex.py) contains the Vortex class, which is used to define a dry axisymmetric atmospheric vortex in thermal wind balance.
 
-The vortex used as an example in Tailleux and Harris (2019), which itself is taken from Smith (2005), can be instantiated using the Vortex.smith() class method.
+The vortex used as an example in Tailleux and Harris (2019), which itself is taken from [Smith (2005)](http://doi.org/10.1016/J.DYNATMOCE.2005.03.003), can be instantiated using the Vortex.smith() class method.
 
 Vortices created using the Vortex class have methods to compute typical air parcel properties. For example, to compute the entropy of the Smith vortex at a radius of 5km and a height of 1km:
 ```python
