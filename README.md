@@ -1,7 +1,7 @@
 # vortex-available-energy
 
 Analyse available energetics of a dry axisymmetric atmospheric vortex as described by Tailleux and Harris (2019):
-> On the momentum-constrained available energy for an axisymmetric compressible stratified vortex
+> The generalised buoyancy/inertial forces and available energy of axisymmetric compressible stratified vortex motions
 
 [Vortex.py](src/Vortex.py) contains the Vortex class, which is used to define a dry axisymmetric atmospheric vortex in thermal wind balance.
 
@@ -17,6 +17,7 @@ entropy = vortex.entropy(5000., 1000.)
 * Available acoustic energy <img src="https://render.githubusercontent.com/render/math?math=\Pi_1">
 * Vortex available energy <img src="https://render.githubusercontent.com/render/math?math=A_e">
 * Thermodynamic (<img src="https://render.githubusercontent.com/render/math?math=\Pi_e">) and mechanical (<img src="https://render.githubusercontent.com/render/math?math=\Pi_k">) components of <img src="https://render.githubusercontent.com/render/math?math=A_e">,
+
 using a Vortex object as a reference state. Functions for computing vortex available energy for a range of perturbations are also provided, as well as functions for comparing <img src="https://render.githubusercontent.com/render/math?math=\Pi_k"> to the eddy kinetic energy.
 
 [plot_vortex.py](src/plot_vortex.py) contains functions to plot various vortex and available energy features, including the figures featured in Tailleux and Harris (2019).
