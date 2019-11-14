@@ -27,7 +27,7 @@ def format_sci_string(x, decimal_places):
     return r'{m:s}\times 10^{{{e:d}}}'.format(m=mantissa, e=int(exponent))
 
 
-def save_or_show_plot(filename, save, show):
+def save_or_show_plot(filename, save, show, png=False):
     """Save figure to results folder, show figures interactively, or both.
 
     Parameters
@@ -35,10 +35,15 @@ def save_or_show_plot(filename, save, show):
     filename: string for name of file
     save: (bool) save plot?
     show: (bool) show plot interactively?
+    png: (kwarg, bool, default=False) save as .png instead of .pdf?
     """
+    if png:
+        file_type = 'png'
+    else:
+        file_type = 'pdf'
     if save:
         # Save figure to results folder as pdf
-        save_path = '../results/{f:s}.pdf'.format(f=filename)
+        save_path = '../results/{f:s}.{t:s}'.format(f=filename, t=file_type)
         plt.savefig(save_path)
     if show:
         plt.show()
@@ -238,6 +243,8 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=True, show=False):
     ax = plt.gca()
     r_grid, z_grid = vortex.grid()
     levels = np.linspace(0., 3.5, 8, endpoint=True)
+    if zoom:
+        ax.set_xlim([0., 50.])
     plt.contourf(r_grid/1000., z_grid/1000., ratios, levels, cmap=cm.Purples)
     line_ctrs = ax.contour(r_grid/1000., z_grid/1000., ratios, [0.5, 1.], colors='k')
     ax.clabel(line_ctrs, line_ctrs.levels, inline=True, fmt='%g', fontsize=14, colors='k')
@@ -247,14 +254,13 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=True, show=False):
     ax.yaxis.set_ticks(np.arange(0, 17, 4))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
     cbar = plt.colorbar(ticks=levels)
-    cbar.set_label(r'$\mathregular{\frac{\left(v - v_m\right)^2}{2\Pi_k}}$', fontsize=24)
+    cbar.set_label(r'$\mathregular{\frac{E_{vk}}{\Pi_k}}$', fontsize=24)
     cbar.ax.tick_params(labelsize=16)
     save_name = 'jacobian_eke_pik_ratio'
     if zoom:
-        ax.set_xlim([0., 50.])
         save_name += '_zoom'
     plt.tight_layout()
-    save_or_show_plot(save_name, save, show)
+    save_or_show_plot(save_name, save, show, png=True)
 
 
 def illustrate_lifting(save=True, show=False):
@@ -323,5 +329,5 @@ if __name__ == '__main__':
     smith_vortex = Vortex.smith()
     plot_azimuthal_wind(smith_vortex)
     illustrate_lifting()
-    plot_jacobian_ratio(smith_vortex)
     plot_available_energy_perturbations(smith_vortex, 40000., 5000.)
+    plot_jacobian_eke_ratio(smith_vortex, zoom=True)
