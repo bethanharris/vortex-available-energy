@@ -44,7 +44,7 @@ def save_or_show_plot(filename, save, show, png=False):
     if save:
         # Save figure to results folder as pdf
         save_path = '../results/{f:s}.{t:s}'.format(f=filename, t=file_type)
-        plt.savefig(save_path)
+        plt.savefig(save_path, dpi=500)
     if show:
         plt.show()
     else:
@@ -239,17 +239,21 @@ def plot_jacobian_eke_ratio(vortex, zoom=False, save=True, show=False):
     show: (kwarg, bool, default=False) show plot interactively?
     """
     ratios = vortex.gridded_variable(vortex.eddy_kinetic_energy_ratio)
-    plt.figure(figsize=(6, 4.5))
-    ax = plt.gca()
     r_grid, z_grid = vortex.grid()
     levels = np.linspace(0., 3.5, 8, endpoint=True)
+    plt.figure(figsize=(6, 4.5))
+    ax = plt.gca()
     if zoom:
-        ax.set_xlim([0., 50.])
+        cut_50km_idx = np.where(r_grid == 50000.)[1][0] + 1
+        r_grid = r_grid[:, 0:cut_50km_idx]
+        z_grid = z_grid[:, 0:cut_50km_idx]
+        ratios = ratios[:, 0:cut_50km_idx]
     plt.contourf(r_grid/1000., z_grid/1000., ratios, levels, cmap=cm.Purples)
     line_ctrs = ax.contour(r_grid/1000., z_grid/1000., ratios, [0.5, 1.], colors='k')
     ax.clabel(line_ctrs, line_ctrs.levels, inline=True, fmt='%g', fontsize=14, colors='k')
     ax.set_xlabel(r'$\mathregular{r\;\left(km\right)}$', fontsize=20)
     ax.set_ylabel(r'$\mathregular{z\;\left(km\right)}$', fontsize=20)
+    ax.set_xlim(left=0.)
     ax.tick_params(labelsize=16)
     ax.yaxis.set_ticks(np.arange(0, 17, 4))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%d'))
