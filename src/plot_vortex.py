@@ -98,7 +98,7 @@ def plot_azimuthal_wind(vortex, save=True, show=False):
     save_or_show_plot('v_contour', save, show)
 
 
-def plot_available_energy_perturbations(vortex, r, z, title=True, save=True, show=False):
+def plot_available_energy_perturbations(vortex, r, z, title=False, save=True, show=False):
     """Plot contours of vortex available energy for perturbations in M/entropy, mu/p_* and r/z at a fixed point.
 
     Parameters
