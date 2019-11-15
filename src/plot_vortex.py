@@ -130,7 +130,7 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=True, sho
     if title:
         plt.title(r'$\mathregular{r = %g\,km,\; z = %g\, km}$' % (r / 1000., z / 1000.), fontsize=14)
     plt.tight_layout()
-    save_or_show_plot('ae_perturbation_M_entropy_r_%d_z_%d' % (r, z), save, show)
+    save_or_show_plot('ae_perturbation_M_entropy_r_%d_z_%d' % (r, z), save, show, png=True)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -148,7 +148,7 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=True, sho
     if title:
         plt.title(r'$\mathregular{r = %g\,km,\; z = %g\, km}$' % (r / 1000., z / 1000.), fontsize=14)
     plt.tight_layout()
-    save_or_show_plot('ae_perturbation_mu_p_r_%d_z_%d' % (r, z), save, show)
+    save_or_show_plot('ae_perturbation_mu_p_r_%d_z_%d' % (r, z), save, show, png=True)
 
     plt.figure(figsize=(6, 4.5))
     ax = plt.gca()
@@ -164,7 +164,7 @@ def plot_available_energy_perturbations(vortex, r, z, title=True, save=True, sho
     if title:
         plt.title(r'$\mathregular{r = %g\,km,\; z = %g\, km}$' % (r/1000., z/1000.), fontsize=14)
     plt.tight_layout()
-    save_or_show_plot('ae_perturbation_rzref_r_%d_z_%d' % (r, z), save, show)
+    save_or_show_plot('ae_perturbation_rzref_r_%d_z_%d' % (r, z), save, show, png=True)
 
 
 def plot_kinetic_energy_perturbations(vortex, r, z, v_range, save=True, show=False):
